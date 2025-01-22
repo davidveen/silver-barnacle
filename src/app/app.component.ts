@@ -1,42 +1,22 @@
 import { Component, inject } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { MatBadge } from '@angular/material/badge';
-import { MatToolbar } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppStore } from '@core/app.store';
 import { StarredComponent } from "./components/starred.component";
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatIconButton } from '@angular/material/button';
+import { ToolbarComponent } from './components/toolbar.component';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    MatToolbar,
     MatSidenavModule,
-    MatIconButton,
-    MatBadge,
     MatProgressBarModule,
-    NgClass,
+    ToolbarComponent,
     StarredComponent
   ],
   template: `
-  <mat-toolbar>
-    <div>
-      {{ title }}
-    </div>
-    <div class="spacer">
-      <button mat-icon-button
-          [matBadge]="store.numberOfStars()"
-          (click)="onSwitchSidebar()" 
-          (keydown.enter)="onSwitchSidebar()" >
-        <i class="fa-star fix-margin"
-          [ngClass]="store.isSidebarOpen() ? 'fa-solid' : 'fa-duotone'">
-        </i>
-      </button>
-    </div>
-  </mat-toolbar>
+  <app-toolbar></app-toolbar>
 
   <mat-sidenav-container class="full-page">
     <mat-sidenav [opened]="store.isSidebarOpen()" (openedChange)="store.updateSidebarOpened($event)" position="end">
@@ -60,20 +40,9 @@ import { MatIconButton } from '@angular/material/button';
   .full-page {
     flex-grow: 1;
   }
-  .clickable {
-    cursor: pointer;
-  }
-  .spacer {
-    width: 165px;
-    text-align: center;
-  }
-  .fix-margin {
-    margin-left: -1px;
-  }
   `
 })
 export class AppComponent {
-  protected title = 'Divodex';
   protected store = inject(AppStore);
 
   onSwitchSidebar() {
