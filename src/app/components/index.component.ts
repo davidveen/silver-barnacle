@@ -50,7 +50,7 @@ export class IndexComponent {
   store = inject(AppStore);
 
   protected isStarred = computed(() => {
-    return this.store.favIds().includes(this.item().id);
+    return this.store.starIds().includes(this.item().id);
   });
 
   @HostListener('dblclick', ['$event']) click(event: MouseEvent) {
@@ -66,9 +66,9 @@ export class IndexComponent {
 
   toggleStarred() {
     if (this.isStarred()) {
-      this.store.removeFav(this.item().id);
+      this.store.removeStar(this.item().id);
     } else {
-      this.store.addFav(this.item().id);
+      this.store.addStar(this.item().id);
     }
   }
 }

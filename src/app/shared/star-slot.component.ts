@@ -4,12 +4,12 @@ import { NumberInputComponent } from './number-input.component';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-fav-slot',
+  selector: 'app-star-slot',
   imports: [ImageComponent, ReactiveFormsModule, NumberInputComponent,],
   template: `
     <div class="item-container"
          (dblclick)="onDoubleClick()">
-      <app-image [id]="fav().id" [width]="80" [height]="80"></app-image>
+      <app-image [id]="star().id" [width]="80" [height]="80"></app-image>
     </div>
     <form [formGroup]="form">
       <app-number-input formControlName="amount" [min]="1" [max]="maxAvailable()"></app-number-input>
@@ -40,14 +40,14 @@ import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule } from '@a
     }
   `
 })
-export class FavSlotComponent implements OnInit {
-  readonly fav = input.required<{ id: number, amount: number }>();
+export class StarSlotComponent implements OnInit {
+  readonly star = input.required<{ id: number, amount: number }>();
   readonly emptySlots = input.required<number>();
 
   private fb = inject(NonNullableFormBuilder);
 
   public amountChanged = output<number>();
-  public removeFav = output<void>();
+  public removeStar = output<void>();
   protected form = this.fb.group<{ amount: number }>({ amount: 0 });
 
   private get amount(): AbstractControl {
@@ -59,7 +59,7 @@ export class FavSlotComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.amount.patchValue(this.fav().amount);
+    this.amount.patchValue(this.star().amount);
 
     this.amount.valueChanges.subscribe(value => {
       this.amountChanged.emit(value);
@@ -67,6 +67,6 @@ export class FavSlotComponent implements OnInit {
   }
 
   onDoubleClick() {
-    this.removeFav.emit();
+    this.removeStar.emit();
   }
 }

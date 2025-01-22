@@ -5,7 +5,7 @@ import { MatBadge } from '@angular/material/badge';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppStore } from '@core/app.store';
-import { FavouritesComponent } from "./components/favourites.component";
+import { StarredComponent } from "./components/starred.component";
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconButton } from '@angular/material/button';
 
@@ -19,7 +19,7 @@ import { MatIconButton } from '@angular/material/button';
     MatBadge,
     MatProgressBarModule,
     NgClass,
-    FavouritesComponent
+    StarredComponent
   ],
   template: `
   <mat-toolbar>
@@ -28,20 +28,20 @@ import { MatIconButton } from '@angular/material/button';
     </div>
     <div class="spacer">
       <button mat-icon-button
-          [matBadge]="store.numberOfFavs()"
-          (click)="onSwitchFavsWidget()" 
-          (keydown.enter)="onSwitchFavsWidget()" >
+          [matBadge]="store.numberOfStars()"
+          (click)="onSwitchSidebar()" 
+          (keydown.enter)="onSwitchSidebar()" >
         <i class="fa-star fix-margin"
-          [ngClass]="store.isFavsOpen() ? 'fa-solid' : 'fa-duotone'">
+          [ngClass]="store.isSidebarOpen() ? 'fa-solid' : 'fa-duotone'">
         </i>
       </button>
     </div>
   </mat-toolbar>
 
   <mat-sidenav-container class="full-page">
-    <mat-sidenav [opened]="store.isFavsOpen()" (openedChange)="store.updateFavsOpened($event)" position="end">
+    <mat-sidenav [opened]="store.isSidebarOpen()" (openedChange)="store.updateSidebarOpened($event)" position="end">
       @defer (on viewport) {
-        <app-favourites></app-favourites>
+        <app-starred></app-starred>
       } @placeholder {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
@@ -76,7 +76,7 @@ export class AppComponent {
   protected title = 'Divodex';
   protected store = inject(AppStore);
 
-  onSwitchFavsWidget() {
-    this.store.updateFavsOpened(!this.store.isFavsOpen());
+  onSwitchSidebar() {
+    this.store.updateSidebarOpened(!this.store.isSidebarOpen());
   }
 }

@@ -6,21 +6,21 @@ import { Pokemon } from '@shared/models';
 import { StorageService } from './storage.service';
 import { isPlatformBrowser } from '@angular/common';
 
-type Favs = Record<number, { id: number, amount: number }>
+type Stars = Record<number, { id: number, amount: number }>
 interface AppState {
-  favs: Favs
-  isFavsOpen: boolean
+  stars: Stars
+  isSidebarOpen: boolean
   pokedex: Pokemon[]
 }
 
 const initialState: AppState = {
-  favs: {},
-  isFavsOpen: false,
+  stars: {},
+  isSidebarOpen: false,
   pokedex: []
 };
 
 const MAX_SLOTS = 6;
-const STORAGE_KEY = 'favs';
+const STORAGE_KEY = 'stars';
 const NOOP = (_x: unknown) => null;
 
 export const AppStore = signalStore(
@@ -52,49 +52,49 @@ export const AppStore = signalStore(
         .subscribe(result => patchState(store, () => ({ pokedex: result })));
 
       // get favourites from local storage
-      const favs = store.getStorage<Favs>(STORAGE_KEY);
+      const stars = store.getStorage<Stars>(STORAGE_KEY);
 
-      if (favs) {
-        patchState(store, () => ({ favs }));
+      if (stars) {
+        patchState(store, () => ({ stars: stars }));
       }
     }
   }),
-  withComputed(({ favs }) => ({
-    numberOfFavs: computed(() => {
-      return Object.values(favs()).reduce((a, b) => {
+  withComputed(({ stars }) => ({
+    numberOfStars: computed(() => {
+      return Object.values(stars()).reduce((a, b) => {
         return a + b.amount;
       }, 0);
     }),
-    favList: computed(() => Object.values(favs())),
-    favIds: computed(() => Object.keys(favs()).map(Number))
+    starList: computed(() => Object.values(stars())),
+    starIds: computed(() => Object.keys(stars()).map(Number))
   })),
   withMethods(store => ({
-    updateFavsOpened(to: boolean) {
-      patchState(store, () => ({ isFavsOpen: to }));
+    updateSidebarOpened(to: boolean) {
+      patchState(store, () => ({ isSidebarOpen: to }));
     },
     updateAmount(id: number, amount: number) {
       patchState(store, () => ({
-        favs: { ...store.favs(), [id]: { id, amount } }
+        stars: { ...store.stars(), [id]: { id, amount } }
       }));
     },
-    addFav(id: number) {
-      if (store.favIds().includes(id)) { return; }
-      if (store.favIds().length == store.maxSlots) { return; }
+    addStar(id: number) {
+      if (store.starIds().includes(id)) { return; }
+      if (store.starIds().length == store.maxSlots) { return; }
 
       patchState(store, () => ({
-        favs: { ...store.favs(), [id]: { id, amount: 1 } }
+        stars: { ...store.stars(), [id]: { id, amount: 1 } }
       }));
 
-      store.setStorage(STORAGE_KEY, store.favs());
+      store.setStorage(STORAGE_KEY, store.stars());
     },
-    removeFav(id: number) {
-      if (!store.favIds().includes(id)) { return; }
-      const { [id]: _, ...rest } = store.favs();
+    removeStar(id: number) {
+      if (!store.starIds().includes(id)) { return; }
+      const { [id]: _, ...rest } = store.stars();
       patchState(store, () => ({
-        favs: { ...rest }
+        stars: { ...rest }
       }));
 
-      store.setStorage(STORAGE_KEY, store.favs());
+      store.setStorage(STORAGE_KEY, store.stars());
     }
   }))
 );

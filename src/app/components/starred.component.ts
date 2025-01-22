@@ -1,18 +1,18 @@
 import { Component, computed, inject } from '@angular/core';
 import { AppStore } from '@core/app.store';
 import { EmptySlotComponent } from '@shared/empty-slot.component';
-import { FavSlotComponent } from "../shared/fav-slot.component";
+import { StarSlotComponent } from "../shared/star-slot.component";
 
 @Component({
-  selector: 'app-favourites',
-  imports: [EmptySlotComponent, FavSlotComponent],
+  selector: 'app-starred',
+  imports: [EmptySlotComponent, StarSlotComponent],
   template: `
-    @for (fav of store.favList(); track fav.id) {
-      <app-fav-slot [fav]="fav" 
+    @for (star of store.starList(); track star.id) {
+      <app-star-slot [star]="star" 
                     [emptySlots]="emptySlots().length"
-                    (amountChanged)="onAmountChanged(fav.id, $event)"
-                    (removeFav)="onRemoveFav(fav.id)">
-      </app-fav-slot>
+                    (amountChanged)="onAmountChanged(star.id, $event)"
+                    (removeStar)="onRemoveStar(star.id)">
+      </app-star-slot>
     }
 
     @for (slot of emptySlots(); track $index) {
@@ -27,11 +27,11 @@ import { FavSlotComponent } from "../shared/fav-slot.component";
     }
   `
 })
-export class FavouritesComponent {
+export class StarredComponent {
   readonly store = inject(AppStore);
 
   protected readonly emptySlots = computed(() => {
-    const length = this.store.maxSlots - this.store.numberOfFavs();
+    const length = this.store.maxSlots - this.store.numberOfStars();
     return Array.from({ length });
   });
 
@@ -39,7 +39,7 @@ export class FavouritesComponent {
     this.store.updateAmount(id, value);
   }
 
-  onRemoveFav(id: number) {
-    this.store.removeFav(id);
+  onRemoveStar(id: number) {
+    this.store.removeStar(id);
   }
 }
