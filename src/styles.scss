@@ -12,8 +12,6 @@ html {
     ));
 }
 
-/* You can add global styles to this file, and also import other style files */
-
 html,
 body {
   height: 100%;
@@ -26,9 +24,18 @@ body {
 
 
 :root {
-  @include mat.sidenav-overrides((container-shape: none, content-background-color: white))
+  --main-border: #efefef;
+  --focus-border: #888888;
+  --div-primary: #5d6c77;
+  --div-accent: #2dc84d;
+  --div-tertiary: #00bce4;
+
+  @include mat.sidenav-overrides((container-shape: none, content-background-color: white, container-width: 200px));
+
+  @include mat.progress-bar-overrides((active-indicator-color: var(--focus-border)));
 }
 
-.mat-toolbar-row, .mat-toolbar-single-row {
+.mat-toolbar-row,
+.mat-toolbar-single-row {
   justify-content: space-between;
 }
