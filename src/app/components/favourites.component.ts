@@ -3,8 +3,6 @@ import { AppStore } from '@core/app.store';
 import { EmptySlotComponent } from '@shared/empty-slot.component';
 import { FavSlotComponent } from "../shared/fav-slot.component";
 
-const MAX_SLOTS = 6;
-
 @Component({
   selector: 'app-favourites',
   imports: [EmptySlotComponent, FavSlotComponent],
@@ -33,7 +31,7 @@ export class FavouritesComponent {
   readonly store = inject(AppStore);
 
   protected readonly emptySlots = computed(() => {
-    const length = MAX_SLOTS - this.store.numberOfFavs();
+    const length = this.store.maxSlots - this.store.numberOfFavs();
     return Array.from({ length });
   });
 

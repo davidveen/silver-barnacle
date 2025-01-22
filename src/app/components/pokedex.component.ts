@@ -9,9 +9,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   template: `
     <cdk-virtual-scroll-viewport [itemSize]="356.98" class="viewport">
       <ng-container *cdkVirtualFor="let item of store.pokedex()">
-        <app-index  [item]="item"
-                    (starred)="onAddFav(item.id)">
-      </app-index>
+        <app-index  [item]="item" [tabIndex]="0"        ></app-index>
       </ng-container>
     </cdk-virtual-scroll-viewport>
   `,
@@ -28,7 +26,4 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 export class PokedexComponent {
   protected store = inject(AppStore);
 
-  onAddFav(id: number) {
-    this.store.addFav(id);
-  }
 }

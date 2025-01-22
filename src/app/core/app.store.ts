@@ -1,4 +1,4 @@
-import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import { environment } from '@env';
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, PLATFORM_ID } from '@angular/core';
@@ -19,12 +19,14 @@ const initialState: AppState = {
   pokedex: []
 };
 
+const MAX_SLOTS = 6;
 const STORAGE_KEY = 'favs';
 const NOOP = (_x: unknown) => null;
 
 export const AppStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+  withProps(_store => ({ maxSlots: MAX_SLOTS })),
   withMethods(() => {
     const platformId = inject(PLATFORM_ID);
     if (!isPlatformBrowser(platformId)) {
@@ -77,6 +79,8 @@ export const AppStore = signalStore(
     },
     addFav(id: number) {
       if (store.favIds().includes(id)) { return; }
+      if (store.favIds().length == store.maxSlots) { return; }
+
       patchState(store, () => ({
         favs: { ...store.favs(), [id]: { id, amount: 1 } }
       }));

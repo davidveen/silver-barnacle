@@ -1,8 +1,9 @@
-import { Component, HostListener, input, output } from '@angular/core';
+import { Component, computed, HostListener, inject, input } from '@angular/core';
 import { CardComponent } from '@shared/card.component';
 import { Pokemon } from '@shared/models';
 import { ImageComponent } from "@shared/image.component";
 import { StatsComponent } from '@shared/stats.component';
+import { AppStore } from '@core/app.store';
 
 @Component({
   selector: 'app-index',
@@ -10,6 +11,9 @@ import { StatsComponent } from '@shared/stats.component';
   template: `
     <app-card>
       @if (item(); as pokemon) {
+        @if (isStarred()) {
+          <i class="tl-absolute fa-duotone fa-light fa-star fa-lg"></i>
+        }
         <app-image [id]="pokemon.id" [height]="250" [width]="250" type="image"></app-image>
         <div class="title">
           {{ pokemon.name.english }}
@@ -21,6 +25,7 @@ import { StatsComponent } from '@shared/stats.component';
   styles: `
     :host {
       display: block;
+      position: relative;
       width: 300px;
       text-align: center;
       margin: 24px auto;
@@ -31,14 +36,39 @@ import { StatsComponent } from '@shared/stats.component';
       letter-spacing: 2px;
       padding: .5em;
     }
+
+    .tl-absolute {
+      position: absolute;
+      top: 20px;
+      right: 12px;
+    }
   `
 })
 export class IndexComponent {
   readonly item = input.required<Pokemon>();
-  readonly starred = output<void>();
+
+  store = inject(AppStore);
+
+  protected isStarred = computed(() => {
+    return this.store.favIds().includes(this.item().id);
+  });
 
   @HostListener('dblclick', ['$event']) click(event: MouseEvent) {
     event.preventDefault();
-    this.starred.emit();
+    this.toggleStarred();
+  }
+
+  @HostListener('keydown.enter', ['$event']) pressedEnter(event: KeyboardEvent) {
+    console.log('fooo');
+    event.preventDefault();
+    this.toggleStarred();
+  }
+
+  toggleStarred() {
+    if (this.isStarred()) {
+      this.store.removeFav(this.item().id);
+    } else {
+      this.store.addFav(this.item().id);
+    }
   }
 }
