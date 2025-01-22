@@ -30,7 +30,14 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
-      "semi": ["error", "always"]
+      "semi": ["error", "always"],
+      "@typescript-eslint/no-unused-vars": [
+        'error',
+        {
+          ignoreRestSiblings: true,
+          argsIgnorePattern: "^_"
+        }
+      ]
     },
   },
   {
