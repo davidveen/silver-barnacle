@@ -33,6 +33,8 @@ body {
   @include mat.sidenav-overrides((container-shape: none, content-background-color: white, container-width: 200px));
 
   @include mat.progress-bar-overrides((active-indicator-color: var(--focus-border)));
+  @include mat.form-field-overrides((container-vertical-padding: 8px,
+      container-height: 40px));
 }
 
 .mat-toolbar-row,

@@ -5,6 +5,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
 import { AppStore } from '@core/app.store';
 import { LogoComponent } from '@shared/logo.component';
+import { SearchComponent } from "../shared/search.component";
 
 @Component({
   selector: 'app-toolbar',
@@ -14,25 +15,37 @@ import { LogoComponent } from '@shared/logo.component';
     MatBadge,
     NgClass,
     LogoComponent,
+    SearchComponent
   ],
   template: `
   <mat-toolbar>
     <app-logo></app-logo>
-    <div>
-      <button mat-icon-button
-          [matBadge]="store.numberOfStars()"
-          (click)="onSwitchSidebar()" 
-          (keydown.enter)="onSwitchSidebar()" >
-        <i class="fa-star fix-margin"
-          [ngClass]="store.isSidebarOpen() ? 'fa-solid' : 'fa-duotone'">
-        </i>
-      </button>
-    </div>
+    @defer {
+      <div class="d-flex align-center">
+        <app-search (searchChange)="onSearchChange($event)"></app-search>
+        <button mat-icon-button
+            [matBadge]="store.numberOfStars()"
+            (click)="onSwitchSidebar()" 
+            (keydown.enter)="onSwitchSidebar()" >
+          <i class="fa-star fix-margin"
+            [ngClass]="store.isSidebarOpen() ? 'fa-solid' : 'fa-duotone'">
+          </i>
+        </button>
+      </div>
+    }
   </mat-toolbar>
   `,
   styles: `
     :host {
       display: block;
+    }
+
+    .d-flex {
+      display: flex;
+    }
+
+    .align-center {
+      align-items: center;
     }
 
     .fix-margin {
@@ -45,5 +58,9 @@ export class ToolbarComponent {
 
   onSwitchSidebar() {
     this.store.updateSidebarOpened(!this.store.isSidebarOpen());
+  }
+
+  onSearchChange(filter: string) {
+    this.store.updateFilter(filter);
   }
 }

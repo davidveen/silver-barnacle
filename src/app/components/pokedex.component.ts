@@ -8,8 +8,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
   imports: [IndexComponent, ScrollingModule],
   template: `
     <cdk-virtual-scroll-viewport [itemSize]="356.98" class="viewport">
-      <ng-container *cdkVirtualFor="let item of store.pokedex()">
-        <app-index  [item]="item" [tabIndex]="0"        ></app-index>
+      <ng-container *cdkVirtualFor="let item of store.filteredList()">
+        <app-index  [item]="item" [tabIndex]="0"></app-index>
       </ng-container>
     </cdk-virtual-scroll-viewport>
   `,

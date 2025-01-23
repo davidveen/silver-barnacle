@@ -9,12 +9,14 @@ import { isPlatformBrowser } from '@angular/common';
 type Stars = Record<number, { id: number, amount: number }>
 interface AppState {
   stars: Stars
+  filter: string
   isSidebarOpen: boolean
   pokedex: Pokemon[]
 }
 
 const initialState: AppState = {
   stars: {},
+  filter: '',
   isSidebarOpen: false,
   pokedex: []
 };
@@ -59,7 +61,16 @@ export const AppStore = signalStore(
       }
     }
   }),
-  withComputed(({ stars }) => ({
+  withComputed(({ pokedex, filter, stars }) => ({
+    filteredList: computed(() => {
+      if (!filter()) {
+        return pokedex();
+      } else {
+        return pokedex().filter(({ name }) => name.english
+          .toLowerCase()
+          .includes(filter()));
+      }
+    }),
     numberOfStars: computed(() => {
       return Object.values(stars()).reduce((a, b) => {
         return a + b.amount;
@@ -76,6 +87,9 @@ export const AppStore = signalStore(
       patchState(store, () => ({
         stars: { ...store.stars(), [id]: { id, amount } }
       }));
+    },
+    updateFilter(filter: string) {
+      patchState(store, () => ({ filter }));
     },
     addStar(id: number) {
       if (store.starIds().includes(id)) { return; }
