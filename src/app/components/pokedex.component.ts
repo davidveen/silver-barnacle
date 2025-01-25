@@ -80,7 +80,7 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
       this.resize(this.rowSize());
     });
     effect(() => {
-      this.fetchRange(this.viewRange());
+      this.fetchRange(this.viewRange(), this.length());
     });
   }
 
@@ -101,7 +101,17 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
     return this.dataStream;
   }
 
-  fetchRange(range: { start: number, end: number }) {
+  fetchRange(range: { start: number, end: number }, length: number) {
+    const setPage = (page: number, data: Pokemon[][]) => {
+      // NB mutates array in place
+      this.cachedData.length = length;
+      this.cachedData.splice(
+        page * this.pageSize,
+        this.pageSize,
+        ...data
+      );
+    };
+
     const pageFromIndex = (index: number) => Math.floor(index / this.pageSize);
     const start = pageFromIndex(range.start);
     const end = pageFromIndex(range.end + 1);
@@ -113,20 +123,12 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
         page * itemsOnPage,
         page * itemsOnPage + itemsOnPage
       ), this.rowSize());
-      this.setPage(page, data);
+      setPage(page, data);
     }
     this.dataStream.next(this.cachedData as Pokemon[][]);
   }
 
-  private setPage = (page: number, data: Pokemon[][]) => {
-    // this is very ugly ;)
-    this.cachedData.length = this.length();
-    this.cachedData.splice(
-      page * this.pageSize,
-      this.pageSize,
-      ...data
-    );
-  };
+
 
   resize(itemsPerRow: number) {
     const currentSize = this.cachedData[0]?.length;
