@@ -53,13 +53,9 @@ export class IndexComponent {
     return this.store.starIds().includes(this.item().id);
   });
 
-  @HostListener('dblclick', ['$event']) click(event: MouseEvent) {
-    event.preventDefault();
-    this.toggleStarred();
-  }
-
-  @HostListener('keydown.enter', ['$event']) pressedEnter(event: KeyboardEvent) {
-    console.log('fooo');
+  @HostListener('dblclick', ['$event'])
+  @HostListener('keydown.enter', ['$event'])
+  @HostListener('doubletap', ['$event']) activate(event: MouseEvent | KeyboardEvent | HammerInput) {
     event.preventDefault();
     this.toggleStarred();
   }
