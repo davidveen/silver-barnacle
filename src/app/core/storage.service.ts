@@ -10,6 +10,7 @@ class NoopStorage implements Storage {
   key(_index: number) { return null; }
 }
 
+// Replace localStorage with a noop in environments where it doesn't exist
 const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
   factory() {
@@ -24,7 +25,6 @@ const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root'
 })
 export class LocalStorageService {
-
   private readonly storage = inject(BROWSER_STORAGE);
 
   set(key: string, value: unknown) {
