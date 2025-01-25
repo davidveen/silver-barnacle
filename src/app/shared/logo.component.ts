@@ -5,7 +5,7 @@ import { ImageComponent } from './image.component';
   selector: 'app-logo',
   imports: [ImageComponent],
   template: `
-    <b>Div</b>
+    <b>div</b>
     <app-image [id]="143" [width]="40" [height]="40"></app-image>
     <span>dex</span>
   `,
