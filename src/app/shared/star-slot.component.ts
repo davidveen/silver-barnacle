@@ -20,7 +20,8 @@ import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule } from '@a
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 24px 0 0;
+      height: 122px;
+      margin: 20px 0 0;
       cursor: pointer;
     }
 
