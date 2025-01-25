@@ -8,7 +8,7 @@ import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule } from '@a
   imports: [ImageComponent, ReactiveFormsModule, NumberInputComponent,],
   template: `
     <div class="item-container"
-         (dblclick)="onDoubleClick()">
+         (doubletap)="onDoubleClick()">
       <app-image [id]="star().id" [width]="80" [height]="80"></app-image>
     </div>
     <form [formGroup]="form">
