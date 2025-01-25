@@ -9,11 +9,14 @@ import { AppStore } from '@core/app.store';
   selector: 'app-index',
   imports: [CardComponent, ImageComponent, StatsComponent],
   template: `
-    <app-card>
+    <app-card class="relative">
       @if (item(); as pokemon) {
         @if (isStarred()) {
           <i class="tl-absolute fa-duotone fa-light fa-star fa-lg"></i>
         }
+        <div class="tr-absolute secondary">
+          {{ pokemon.id }}
+        </div>
         <app-image [id]="pokemon.id" [height]="250" [width]="250" type="image"></app-image>
         <div class="title">
           {{ pokemon.name.english }}
@@ -25,7 +28,6 @@ import { AppStore } from '@core/app.store';
   styles: `
     :host {
       display: block;
-      position: relative;
       width: 300px;
       text-align: center;
       margin: 24px auto;
@@ -37,17 +39,30 @@ import { AppStore } from '@core/app.store';
       padding: .5em;
     }
 
+    .relative {
+      position: relative;
+    }
     .tl-absolute {
       position: absolute;
       top: 20px;
       right: 12px;
     }
+    .tr-absolute {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+    }
+    .secondary {
+      font-size: smaller;
+      color: gray;
+      font-family: monospace;
+    }
   `
 })
 export class IndexComponent {
-  readonly item = input.required<Pokemon>();
-
   store = inject(AppStore);
+
+  readonly item = input.required<Pokemon>();
 
   protected isStarred = computed(() => {
     return this.store.starIds().includes(this.item().id);
