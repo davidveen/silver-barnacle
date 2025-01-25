@@ -92,6 +92,9 @@ export const AppStore = signalStore(
       }));
 
       store.storage.set(STORAGE_KEY, store.stars());
+    },
+    getPage(start: number, end: number) {
+      return store.filteredList().slice(start, end);
     }
   }))
 );
