@@ -1,10 +1,9 @@
-import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
+import { patchState, signalStore, signalStoreFeature, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import { environment } from '@env';
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, PLATFORM_ID } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import { Pokemon } from '@shared/models';
-import { StorageService } from './storage.service';
-import { isPlatformBrowser } from '@angular/common';
+import { LocalStorageService } from './storage.service';
 
 type Stars = Record<number, { id: number, amount: number }>
 interface AppState {
@@ -23,28 +22,12 @@ const initialState: AppState = {
 
 const MAX_SLOTS = 6;
 const STORAGE_KEY = 'stars';
-const NOOP = (_x: unknown) => null;
 
 export const AppStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+  withStorage(),
   withProps(_store => ({ maxSlots: MAX_SLOTS })),
-  withMethods(() => {
-    const platformId = inject(PLATFORM_ID);
-    if (!isPlatformBrowser(platformId)) {
-      return {
-        setStorage: NOOP,
-        getStorage: NOOP
-      };
-    }
-
-    const storage = inject(StorageService);
-
-    return {
-      setStorage: storage.set,
-      getStorage: storage.get
-    };
-  }),
   withHooks({
     onInit(store) {
       // get pokedex from API
@@ -54,7 +37,7 @@ export const AppStore = signalStore(
         .subscribe(result => patchState(store, () => ({ pokedex: result })));
 
       // get favourites from local storage
-      const stars = store.getStorage<Stars>(STORAGE_KEY);
+      const stars = store.storage.get<Stars>(STORAGE_KEY);
 
       if (stars) {
         patchState(store, () => ({ stars: stars }));
@@ -99,7 +82,7 @@ export const AppStore = signalStore(
         stars: { ...store.stars(), [id]: { id, amount: 1 } }
       }));
 
-      store.setStorage(STORAGE_KEY, store.stars());
+      store.storage.set(STORAGE_KEY, store.stars());
     },
     removeStar(id: number) {
       if (!store.starIds().includes(id)) { return; }
@@ -108,7 +91,13 @@ export const AppStore = signalStore(
         stars: { ...rest }
       }));
 
-      store.setStorage(STORAGE_KEY, store.stars());
+      store.storage.set(STORAGE_KEY, store.stars());
     }
   }))
 );
+
+function withStorage() {
+  return signalStoreFeature(
+    withProps(_store => ({ storage: inject(LocalStorageService) }))
+  );
+}
