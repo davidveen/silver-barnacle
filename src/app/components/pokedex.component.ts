@@ -4,9 +4,9 @@ import { AppStore } from '@core/app.store';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Pokemon } from '@shared/models';
-import { BehaviorSubject, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { chunk } from '@shared/utils';
-import { ScreensizeService } from '@core/screensize.service';
+import { ScreenSize, ScreensizeService } from '@core/screensize.service';
 
 @Component({
   selector: 'app-pokedex',
@@ -19,10 +19,8 @@ import { ScreensizeService } from '@core/screensize.service';
     <cdk-virtual-scroll-viewport [itemSize]="405" class="viewport">
       <ng-container *cdkVirtualFor="let row of ds">
         <div class="row">
-        @for (item of row; track $index) {
-          <div>
-            <app-index  [item]="item" [tabIndex]="0"></app-index>
-          </div>
+        @for (item of row; track item.id) {
+          <app-index  [item]="item" [tabIndex]="0"></app-index>
         }
         </div>
       </ng-container>
@@ -56,26 +54,21 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
   screenSize = inject(ScreensizeService);
 
   private pageSize = 3;
-  private rowSize = signal(1);
+  private rowSize = computed(() => {
+    const size = this.screenSize.size() as ScreenSize;
+    const sizeMap = {
+      'xxl': 5,
+      'xl': 4,
+      'lg': 3,
+      'md': 2,
+      'sm': 1
+    };
+    return sizeMap[size] || 1;
+  });
   private viewRange = signal<{ start: number, end: number }>({ start: 0, end: 0 });
 
   constructor() {
     super();
-    this.screenSize.size$
-      .pipe(
-        map(size => {
-          switch (size) {
-            case ('xxl'): { return 5; }
-            case ('xl'): { return 4; }
-            case ('lg'): { return 3; }
-            case ('md'): { return 2; }
-            default: { return 1; }
-          }
-        }))
-      .subscribe(rows => {
-        this.rowSize.set(rows);
-      });
-
     effect(() => {
       this.resize(this.rowSize());
     });
@@ -83,7 +76,6 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
       this.fetchRange(this.viewRange(), this.length());
     });
   }
-
 
   private length = computed(() => {
     return Math.ceil(this.store.filteredList().length / this.rowSize());
@@ -101,9 +93,13 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
     return this.dataStream;
   }
 
+  disconnect() {
+    this.subscription.unsubscribe();
+  }
+
   fetchRange(range: { start: number, end: number }, length: number) {
     const setPage = (page: number, data: Pokemon[][]) => {
-      // NB mutates array in place
+      // NB mutates array in-place
       this.cachedData.length = length;
       this.cachedData.splice(
         page * this.pageSize,
@@ -114,7 +110,7 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
 
     const pageFromIndex = (index: number) => Math.floor(index / this.pageSize);
     const start = pageFromIndex(range.start);
-    const end = pageFromIndex(range.end + 1);
+    const end = pageFromIndex(range.end) + 1;
     const itemsOnPage = this.pageSize * this.rowSize();
 
     const pages = Array.from(({ length: end - start }), (_, i) => i + start);
@@ -128,16 +124,10 @@ class MultirowDataSource extends DataSource<Pokemon[]> {
     this.dataStream.next(this.cachedData as Pokemon[][]);
   }
 
-
-
   resize(itemsPerRow: number) {
     const currentSize = this.cachedData[0]?.length;
     if (!currentSize || currentSize == itemsPerRow) { return; }
 
     this.cachedData = chunk<Pokemon>(this.cachedData.flat(), itemsPerRow);
-  }
-
-  disconnect() {
-    this.subscription.unsubscribe();
   }
 }

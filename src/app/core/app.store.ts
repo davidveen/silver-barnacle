@@ -21,7 +21,7 @@ const initialState: AppState = {
 };
 
 const MAX_SLOTS = 6;
-const STORAGE_KEY = 'stars';
+const STORAGE_KEY = 'divodex';
 
 export const AppStore = signalStore(
   { providedIn: 'root' },

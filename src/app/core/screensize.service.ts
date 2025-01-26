@@ -1,17 +1,15 @@
 import { afterNextRender, Injectable } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, distinctUntilChanged, fromEvent, map, throttleTime } from 'rxjs';
 
-type ScreenSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+export type ScreenSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScreensizeService {
   private _size$ = new BehaviorSubject<ScreenSize>('sm');
-
-  get size$() {
-    return this._size$.asObservable();
-  }
+  public readonly size = toSignal<string>(this._size$);
 
   constructor() {
     afterNextRender({

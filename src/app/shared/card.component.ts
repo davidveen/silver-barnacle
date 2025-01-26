@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
   styles: `
     :host {
       display: block;
-      border-radius: 4px;
+      border-radius: 12px;
       border: 1px solid var(--main-border);
       cursor: pointer;
       
@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
 
       &:hover {
         border: 1px solid var(--focus-border);
-        box-shadow: rgba(0, 0, 0, 0.22) 0px 19px 43px;
+        box-shadow: rgba(0, 0, 0, 0.22) 24px 19px 43px;
         transform: translate3d(0px, -1px, 0px);
       }
     }

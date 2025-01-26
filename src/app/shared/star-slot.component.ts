@@ -60,10 +60,10 @@ export class StarSlotComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.amount.patchValue(this.star().amount);
+    this.amount.setValue(this.star().amount, { emitEvent: false });
 
     this.amount.valueChanges.subscribe(value => {
-      this.amountChanged.emit(value);
+      this.amountChanged.emit(Number(value));
     });
   }
 
