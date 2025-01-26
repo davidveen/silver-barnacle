@@ -1,5 +1,6 @@
 import { Component, computed, ElementRef, forwardRef, input, viewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { BACKSPACE, DOWN_ARROW, ENTER, ESCAPE, UP_ARROW } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-number-input',
@@ -14,7 +15,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
           [min]="min()"
           [max]="max()"
           [value]="value"
-          (input)="onChange($any($event).target?.value)">
+          (keydown)="onKeydown($event)"
+          (input)="wrapChange($event)"
+          [tabIndex]="0">
     <button (click)="increment()">+</button>
   </div>
   `,
@@ -59,7 +62,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   }
 
   input[type="number"] {
-    -moz-appearance: none;
+    caret-color: transparent;
+    -moz-appearance: textfield !important;
     -webkit-appearance: none;
     appearance: none;
     width: 60px;
@@ -114,5 +118,19 @@ export class NumberInputComponent implements ControlValueAccessor {
 
   registerOnTouched(fn: (_: unknown) => void): void {
     this.onTouched = fn;
+  }
+
+  onKeydown(event: KeyboardEvent) {
+    const allowed = [
+      BACKSPACE, DOWN_ARROW, UP_ARROW, ESCAPE, ENTER
+    ];
+    if (!allowed.includes(event.keyCode)) {
+      event.preventDefault();
+    }
+  }
+
+  wrapChange(event: Event) {
+    const value = Number((event.target as HTMLInputElement).value);
+    this.onChange(value);
   }
 }
